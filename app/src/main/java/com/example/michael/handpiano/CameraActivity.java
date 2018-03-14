@@ -73,21 +73,6 @@ public abstract class CameraActivity extends Activity
             requestPermission();
         }
 
-//        ImageView imgCameraSwitch;
-//        imgCameraSwitch = (ImageView)findViewById(R.id.img_switch);
-//        imgCameraSwitch.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-////                Toast.makeText(CameraActivity.this, "Camera switch clicked", Toast.LENGTH_LONG).show();
-//                useFrontCamera = !useFrontCamera;
-//
-//                if (hasPermission()) {
-//                    setFragment();
-//                } else {
-//                    requestPermission();
-//                }
-//            }
-//        });
     }
 
     private byte[] lastPreviewFrame;

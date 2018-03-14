@@ -14,25 +14,36 @@
         android:background="@android:color/black">
     </FrameLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/black">
+        android:background="@android:color/black"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Spinner
+            android:id="@+id/spinnerMajor"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@android:color/background_light">
+        </Spinner>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" >
+        </Space>
 
         <ImageView
             android:id="@+id/img_switch"
             android:contentDescription="@string/switch_camera"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
             android:padding="5dp"
             android:src="@drawable/ic_action_switch_camera" />
-    </RelativeLayout>
-
-
+    </LinearLayout>
 
 
 </RelativeLayout>
