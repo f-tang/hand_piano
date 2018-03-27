@@ -135,7 +135,10 @@ public abstract class CameraActivity extends Activity
                         isProcessingFrame = false;
                     }
                 };
+
         processImage();
+//        playMidi();
+
     }
 
     /**
@@ -194,8 +197,8 @@ public abstract class CameraActivity extends Activity
                             isProcessingFrame = false;
                         }
                     };
-
             processImage();
+
         } catch (final Exception e) {
             LOGGER.e(e, "Exception!");
             Trace.endSection();
@@ -253,9 +256,16 @@ public abstract class CameraActivity extends Activity
         super.onDestroy();
     }
 
-    protected synchronized void runInBackground(final Runnable r) {
+    protected synchronized void runInBackground(final Runnable r, long period) {
         if (handler != null) {
-            handler.post(r);
+//            handler.post(r);
+            handler.postDelayed(r, period);
+        }
+    }
+
+    protected synchronized void runInBackgroundDelay(final Runnable r, long period){
+        if (handler != null){
+            handler.postDelayed(r, period);
         }
     }
 
@@ -444,6 +454,8 @@ public abstract class CameraActivity extends Activity
     }
 
     protected abstract void processImage();
+
+    protected abstract void playMidi();
 
     protected abstract void onPreviewSizeChosen(final Size size, final int rotation);
     protected abstract int getLayoutId();

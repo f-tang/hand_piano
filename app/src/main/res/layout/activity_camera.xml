@@ -27,7 +27,24 @@
             android:id="@+id/spinnerMajor"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@android:color/background_light">
+            android:gravity="center"
+            android:background="@android:color/black"
+            android:popupBackground="@android:color/black">
+        </Spinner>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" >
+        </Space>
+
+        <Spinner
+            android:id="@+id/spinnerInstrument"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:gravity="center"
+            android:background="@android:color/black"
+            android:popupBackground="@android:color/black">
         </Spinner>
 
         <Space

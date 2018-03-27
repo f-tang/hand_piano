@@ -163,9 +163,9 @@ public class DetectorActivity extends CameraActivity
 
         final String [] majors = {"C", "D", "E", "F", "G", "A", "B"};
         Spinner spinnerMajor = (Spinner)findViewById(R.id.spinnerMajor);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, majors);
+        ArrayAdapter<String> adapterMajor = new ArrayAdapter<String>(this, R.layout.spinner_major_item, majors);
 //        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerMajor.setAdapter(adapter);
+        spinnerMajor.setAdapter(adapterMajor);
         spinnerMajor.setVisibility(View.VISIBLE);
         spinnerMajor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
 
@@ -173,6 +173,43 @@ public class DetectorActivity extends CameraActivity
             public void onItemSelected(AdapterView<?> adapterView, View view,
                                        int i, long l) {
                 midiDriver.setMajor(i);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        final String [] instruments = {"Piano", "Organ", "Guitar", "Violin", "Trumpet", "Sax", "Flute"};
+        Spinner spinnerInstrument = (Spinner)findViewById(R.id.spinnerInstrument);
+        ArrayAdapter<String> adapterInstrument = new ArrayAdapter<String>(this, R.layout.spinner_instrument_item, instruments);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerInstrument.setAdapter(adapterInstrument);
+        spinnerInstrument.setVisibility(View.VISIBLE);
+        spinnerInstrument.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int i, long l) {
+                byte instrument = 0;
+                switch (i){
+                    case 1:
+                        instrument = 19; break;
+                    case 2:
+                        instrument = 24; break;
+                    case 3:
+                        instrument = 40; break;
+                    case 4:
+                        instrument = 56; break;
+                    case 5:
+                        instrument = 65; break;
+                    case 6:
+                        instrument = 73; break;
+
+                }
+                midiDriver.selectInstrument(instrument, (byte)0);
 
             }
 
@@ -420,6 +457,8 @@ public class DetectorActivity extends CameraActivity
                         final List<Classifier.Recognition> mappedRecognitions =
                                 new LinkedList<Classifier.Recognition>();
 
+                        final List<Integer> octaveList = new LinkedList<>();
+
                         for (final Classifier.Recognition result : results) {
                             final RectF location = result.getLocation();
 
@@ -436,25 +475,25 @@ public class DetectorActivity extends CameraActivity
 
                                 switch (title){
                                     case "g1":
-                                        midiDriver.playShortOctave((byte) 0x1, (long)300);
+                                        octaveList.add(1);
                                         break;
                                     case "g2":
-                                        midiDriver.playShortOctave((byte) 0x2, (long)300);
+                                        octaveList.add(2);
                                         break;
                                     case "g3":
-                                        midiDriver.playShortOctave((byte) 0x3, (long)300);
+                                        octaveList.add(3);
                                         break;
                                     case "g4":
-                                        midiDriver.playShortOctave((byte) 0x4, (long)300);
+                                        octaveList.add(4);
                                         break;
                                     case "g5":
-                                        midiDriver.playShortOctave((byte) 0x5, (long)300);
+                                        octaveList.add(5);
                                         break;
                                     case "g6":
-                                        midiDriver.playShortOctave((byte) 0x6, (long)300);
+                                        octaveList.add(6);
                                         break;
                                     case "g7":
-                                        midiDriver.playShortOctave((byte) 0x7, (long)300);
+                                        octaveList.add(7);
                                         break;
                                     default:
                                         break;
@@ -469,8 +508,77 @@ public class DetectorActivity extends CameraActivity
                         requestRender();
                         computingDetection = false;
 
+                        for (Integer octave : octaveList){
+                            midiDriver.playShortOctave(octave.byteValue(), (byte)0, (long)300);
+                        }
+
                     }
-                });
+                }, 1000);
+
+    }
+
+    @Override
+    protected void playMidi(){
+
+        runInBackgroundDelay(new Runnable() {
+            @Override
+            public void run() {
+                final List<Classifier.Recognition> results = detector.recognizeImage(croppedBitmap);
+                final List<Integer> octaveList = new LinkedList<>();
+
+                float minimumConfidence = MINIMUM_CONFIDENCE_TF_OD_API;
+                switch (MODE) {
+                    case TF_OD_API:
+                        minimumConfidence = MINIMUM_CONFIDENCE_TF_OD_API;
+                        break;
+                    case MULTIBOX:
+                        minimumConfidence = MINIMUM_CONFIDENCE_MULTIBOX;
+                        break;
+                    case YOLO:
+                        minimumConfidence = MINIMUM_CONFIDENCE_YOLO;
+                        break;
+                }
+
+                for (final Classifier.Recognition result : results){
+                    final RectF location = result.getLocation();
+
+                    if (location != null && result.getConfidence() >= minimumConfidence){
+                        // print detected title
+                        String title = result.getTitle();
+                        LOGGER.i("Detect title: " + title);
+                        switch (title){
+                            case "g1":
+                                octaveList.add(1);
+                                break;
+                            case "g2":
+                                octaveList.add(2);
+                                break;
+                            case "g3":
+                                octaveList.add(3);
+                                break;
+                            case "g4":
+                                octaveList.add(4);
+                                break;
+                            case "g5":
+                                octaveList.add(5);
+                                break;
+                            case "g6":
+                                octaveList.add(6);
+                                break;
+                            case "g7":
+                                octaveList.add(7);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                for (Integer octave : octaveList){
+                    midiDriver.playShortOctave(octave.byteValue(), (byte)0, (long)300);
+                }
+            }
+        }, 1000);
+
     }
 
     @Override

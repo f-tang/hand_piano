@@ -28,43 +28,43 @@ class MidiPlayer extends MidiDriver{
 
     }
 
-    public void playShortOctave(byte octave, long period){
+    public void playShortOctave(byte octave, final byte channel, long period){
 
         if (octave < 1 || octave > 7) return;
 
         final byte note = (byte) (currentMajor + currentNotes[octave - 1]);
-        playNote(note);
+        playNote(note, channel);
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                stopNote(note);
+                stopNote(note, channel);
             }
         };
         handler.postDelayed(r, period);
 
     }
 
-    public void playLongOctave(byte octave){
+    public void playLongOctave(byte octave, byte channel){
 
         if (octave < 1 || octave > 7) return;
 
         byte note = (byte) (currentMajor + currentNotes[octave - 1]);
-        playNote(note);
+        playNote(note, channel);
 
     }
 
-    public void stopOctave(byte octave){
+    public void stopOctave(byte octave, byte channel){
         if (octave < 1 || octave > 7) return;
 
         byte note = (byte) (currentMajor + currentNotes[octave - 1]);
-        stopNote(note);
+        stopNote(note, channel);
     }
 
-    public void playNote(byte note) {
+    public void playNote(byte note, byte channel) {
 
         // Construct a note ON message for the middle C at maximum velocity on channel 1:
         event = new byte[3];
-        event[0] = (byte) (0x90 | 0x00);  // 0x90 = note On, 0x00 = channel 1
+        event[0] = (byte) (0x90 | channel);  // 0x90 = note On, 0x00 = channel 1
         event[1] = note;  // 0x3C = middle C
         event[2] = (byte) 0x7F;  // 0x7F = the maximum velocity (127)
 
@@ -76,17 +76,27 @@ class MidiPlayer extends MidiDriver{
 
     }
 
-    public void stopNote(byte note) {
+    public void stopNote(byte note, byte channel) {
 
         // Construct a note OFF message for the middle C at minimum velocity on channel 1:
         event = new byte[3];
-        event[0] = (byte) (0x80 | 0x00);  // 0x80 = note Off, 0x00 = channel 1
+        event[0] = (byte) (0x80 | channel);  // 0x80 = note Off, 0x00 = channel 1
         event[1] = note;  // 0x3C = middle C
         event[2] = (byte) 0x00;  // 0x00 = the minimum velocity (0)
 
         // Send the MIDI event to the synthesizer.
         write(event);
 
+    }
+
+    public void selectInstrument(byte instrument, byte channel){
+        // Construct a program change to select the instrument on channel 1:
+        event = new byte[2];
+        event[0] = (byte)(0xC0 | channel); // 0xC0 = program change, 0x00 = channel 1
+        event[1] = (byte)instrument;
+
+        // Send the MIDI event to the synthesizer.
+        write(event);
     }
 
 }
