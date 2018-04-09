@@ -492,7 +492,7 @@ public class DetectorActivity extends CameraActivity
                                     case "g6":
                                         octaveList.add(6);
                                         break;
-                                    case "g7":
+                                    case "g7":case "g0":
                                         octaveList.add(7);
                                         break;
                                     default:
@@ -513,7 +513,7 @@ public class DetectorActivity extends CameraActivity
                         }
 
                     }
-                }, 1000);
+                }, 1500);
 
     }
 
